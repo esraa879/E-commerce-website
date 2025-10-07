@@ -7,7 +7,7 @@ import { getUserWishListAction } from "@/WishListAction/getUserWishList"
 interface WishListContextType {
   isLoading: boolean
   numOfWishList: number
-  products: Data[]   // 👈 products دلوقتي Array مباشرة
+  products: Data[]   
   addToWishList: (item: Data) => void
   totalWishListPrice: number
   removeProduct: (productId: string) => void
@@ -29,13 +29,11 @@ export const WishListContext = createContext<WishListContextType>({
 const WishListContextProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Data[]>([])
   const [numOfWishList, setNumOfWishList] = useState(0)
-  const [totalWishListPrice, setTotalWishListPrice] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
   const clearWishList = () => {
     setProducts([])
     setNumOfWishList(0)
-    setTotalWishListPrice(0)
   }
 
   async function getUserWishList() {
@@ -43,9 +41,8 @@ const WishListContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       const data: Wishlist = await getUserWishListAction()
       if (data && data.data) {
-        setProducts(data.data) // 👈 Array مباشرة
+        setProducts(data.data) 
         setNumOfWishList(data.count || data.data.length || 0)
-        setTotalWishListPrice(data.totalWishListPrice || 0)
       }
     } catch (err) {
       console.error("Failed to load wishlist:", err)
@@ -66,16 +63,14 @@ const WishListContextProvider = ({ children }: { children: ReactNode }) => {
 
     setProducts(prev => [...prev, item])
     setNumOfWishList(prev => prev + 1)
-    setTotalWishListPrice(prev => prev + item.price)
+    
   }
 
   const removeProduct = (productId: string) => {
     const newProducts = products.filter(p => p._id !== productId)
-    const newTotalPrice = newProducts.reduce((acc, p) => acc + p.price, 0)
     const newNum = newProducts.length
 
     setProducts(newProducts)
-    setTotalWishListPrice(newTotalPrice)
     setNumOfWishList(newNum)
   }
 
@@ -90,7 +85,6 @@ const WishListContextProvider = ({ children }: { children: ReactNode }) => {
         numOfWishList,
         products,
         addToWishList,
-        totalWishListPrice,
         clearWishList,
         removeProduct,
         isInWishList,

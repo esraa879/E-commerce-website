@@ -1,6 +1,7 @@
 export interface Wishlist {
   status: string
   count: number
+  totalWishListPrice?: number
   data: Data[]
 }
 
