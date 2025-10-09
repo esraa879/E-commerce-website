@@ -9,7 +9,6 @@ interface WishListContextType {
   numOfWishList: number
   products: Data[]   
   addToWishList: (item: Data) => void
-  totalWishListPrice: number
   removeProduct: (productId: string) => void
   clearWishList: () => void
   isInWishList: (id: string) => boolean
@@ -20,7 +19,6 @@ export const WishListContext = createContext<WishListContextType>({
   numOfWishList: 0,
   products: [],
   addToWishList: () => {},
-  totalWishListPrice: 0,
   removeProduct: () => {},
   clearWishList: () => {},
   isInWishList: () => false,

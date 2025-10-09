@@ -1,7 +1,6 @@
 export interface Wishlist {
   status: string
   count: number
-  totalWishListPrice?: number
   data: Data[]
 }
 
@@ -17,7 +16,6 @@ export interface Data {
   quantity: number
   price: number
   numOfWishList:number
-  totalWishListPrice:number
   products:string
   imageCover: string
   category: Category

@@ -1,0 +1,5 @@
+[33mcommit 21ea2906bf4bc72655d0d177bf8377df8ecb0dc8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: esraa879 <esraaabdallah09@gmail.com>
+Date:   Tue Oct 7 19:00:14 2025 +0300
+
+    Fix: add totalWishListPrice to Wishlist type definition
