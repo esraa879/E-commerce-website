@@ -1,6 +1,7 @@
 "use client"
 import { Button } from '@/components/ui/button'
-import { cartContext } from '@/Context/CartContext'
+import { cartContext } from "@/Context/CartContext";
+
 import React, { useContext } from 'react'
 import { toast } from 'sonner'
 
@@ -43,4 +44,4 @@ toast.error("faild to add product to cart", {
   )
 }
 
-export default AddBtnCart
+export default AddBtnCart 

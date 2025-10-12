@@ -47,3 +47,11 @@ export interface Brand {
   slug: string
   image: string
 }
+export interface WishListItem {
+  _id: string
+  title: string
+  price: number
+  imageCover: string
+  category: Category
+  ratingsAverage: number
+}

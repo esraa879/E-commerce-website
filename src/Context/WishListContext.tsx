@@ -1,14 +1,14 @@
 "use client"
 
 import React, { createContext, useState, useEffect, ReactNode } from "react"
-import { Wishlist, Data } from "@/types/wishlist.type"
+import { Wishlist, WishListItem } from "@/types/wishlist.type"
 import { getUserWishListAction } from "@/WishListAction/getUserWishList"
 
 interface WishListContextType {
   isLoading: boolean
   numOfWishList: number
-  products: Data[]   
-  addToWishList: (item: Data) => void
+  products: WishListItem[]
+  addToWishList: (item: WishListItem) => void
   removeProduct: (productId: string) => void
   clearWishList: () => void
   isInWishList: (id: string) => boolean
@@ -25,7 +25,7 @@ export const WishListContext = createContext<WishListContextType>({
 })
 
 const WishListContextProvider = ({ children }: { children: ReactNode }) => {
-  const [products, setProducts] = useState<Data[]>([])
+  const [products, setProducts] = useState<WishListItem[]>([])
   const [numOfWishList, setNumOfWishList] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -39,7 +39,7 @@ const WishListContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       const data: Wishlist = await getUserWishListAction()
       if (data && data.data) {
-        setProducts(data.data) 
+        setProducts(data.data as WishListItem[])
         setNumOfWishList(data.count || data.data.length || 0)
       }
     } catch (err) {
@@ -53,23 +53,23 @@ const WishListContextProvider = ({ children }: { children: ReactNode }) => {
     getUserWishList()
   }, [])
 
-  const addToWishList = (item: Data) => {
-    if (!item || item.price === undefined) {
+  const addToWishList = (item: WishListItem) => {
+    if (!item || !item._id) {
       console.warn("Invalid item passed to addToWishList:", item)
       return
     }
 
-    setProducts(prev => [...prev, item])
+    setProducts(prev => {
+      if (prev.some(p => p._id === item._id)) return prev
+      return [...prev, item]
+    })
     setNumOfWishList(prev => prev + 1)
-    
   }
 
   const removeProduct = (productId: string) => {
     const newProducts = products.filter(p => p._id !== productId)
-    const newNum = newProducts.length
-
     setProducts(newProducts)
-    setNumOfWishList(newNum)
+    setNumOfWishList(newProducts.length)
   }
 
   const isInWishList = (id: string) => {
