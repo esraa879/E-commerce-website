@@ -1,120 +1,83 @@
-"use client"
+"use client";
 
-import { Input } from '@/components/ui/input'
-import React, { useContext, useRef } from 'react'
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { cartContext } from '@/Context/CartContext';
-import { cashPaymentAction } from '@/PaymentActions/cashPayment';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import { onlinePaymentAction } from '@/PaymentActions/onlinePayment';
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { onlinePaymentAction } from "@/PaymentActions/onlinePayment";
 
+const PaymentPage = () => {
+  const details = useRef<HTMLTextAreaElement>(null);
+  const phone = useRef<HTMLInputElement>(null);
+  const city = useRef<HTMLInputElement>(null);
 
-const Payment = () => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-const router = useRouter()
+  async function handleOnlinePayment() {
+    setLoading(true);
 
-    const { cartId , afterPayment } = useContext(cartContext)
+    const values = {
+      shippingAddress: {
+        details: details.current?.value || "",
+        phone: phone.current?.value || "",
+        city: city.current?.value || "",
+      },
+    };
 
-const details = useRef("")
-const phone = useRef("")
-const city = useRef("")
+    try {
+      const data = await onlinePaymentAction("YOUR_CART_ID", values);
 
-async function cashPayment(){
-
-    const values ={
-        shippingAddress:{
-            details: details.current?.value,
-            phone: phone.current?.value,
-             city: city.current?.value,
-
-        }
+      if (data?.session?.url) {
+        toast.success("Redirecting to payment page...", {
+          duration: 1500,
+          position: "top-center",
+        });
+        router.push(data.session.url);
+      } else {
+        toast.error("Failed to start payment session");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Payment failed");
+    } finally {
+      setLoading(false);
     }
-
-   try {
-    
-  const data = await cashPaymentAction(cartId, values)
-
-  console.log(data);
-
-  toast.success(data.status,{
-    position:"top-center",
-    duration:1000
-  })
-  
-afterPayment()
-router.push("/allorders")
-
-   } catch (error) {
-    console.log(error)
-   }
-    
-}
-
-
-async function onlinePayment(){
-
-    const values ={
-        shippingAddress:{
-            details: details.current?.value,
-            phone: phone.current?.value,
-             city: city.current?.value,
-
-        }
-    }
-
-   try {
-    
-  const data = await onlinePaymentAction(cartId, values)
-
-  console.log(data);
-
-  if(data.status === "success"){
-    window.location.href = data.session.url
   }
 
-//   toast.success(data.status,{
-//     position:"top-center",
-//     duration:1000
-//   })
-  
-// afterPayment()
-// router.push("/allorders")
-
-   } catch (error) {
-    console.log(error)
-   }
-    
-}
-
-
-
   return (
-    <div className='w-full md:w-1/2 my-10 mx-auto px-5 md:px-0'>
-        
-       <h1 className='mb-10 text-center text-3xl font-bold'>Payment</h1>
-    
+    <div className="w-full md:w-[60%] mx-auto my-10 px-5">
+      <h1 className="text-2xl font-bold mb-5">Payment Information</h1>
 
-<div>
-    <label htmlFor='details'>Details</label>
-    <Input ref={details} className='mb-4' type="text" id="details" />
+      <div className="flex flex-col gap-4 mb-6">
+        <input
+          ref={details}
+          type="text"
+          placeholder="Address details"
+          className="border p-2 rounded"
+        />
+        <input
+          ref={phone}
+          type="text"
+          placeholder="Phone number"
+          className="border p-2 rounded"
+        />
+        <input
+          ref={city}
+          type="text"
+          placeholder="City"
+          className="border p-2 rounded"
+        />
+      </div>
 
-    <label htmlFor='phone'>Phone</label>
-    <Input ref={phone} className='mb-4' type="tel" id="phone" />
-
-    <label htmlFor='city'>City</label>
-    <Input ref={city} className='mb-4' type="text" id="city" />
-</div>
-
-
-<Button onClick={cashPayment}>Cash Payment</Button>
-<Button onClick={onlinePayment} className='mx-5'>Online Payment</Button>
-
-
+      <Button
+        onClick={handleOnlinePayment}
+        disabled={loading}
+        className="bg-green-600 hover:bg-green-700 text-white w-full"
+      >
+        {loading ? "Processing..." : "Pay Online"}
+      </Button>
     </div>
+  );
+};
 
-
-  )
-}
-
-export default Payment
+export default PaymentPage;

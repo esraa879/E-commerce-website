@@ -1,28 +1,33 @@
 "use client"
 
 import React, { useContext } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card"
+import { Product } from "../../../types/product.type"
+import AddBtnCart from "../AddBtnCart/AddBtnCart"
 import { WishListContext } from "@/Context/WishListContext"
-import { Category } from "@/types/product.type"
+import { Heart } from "lucide-react"
 import { toast } from "sonner"
 
-interface ProductCardProps {
-  product: {
-    id: string
-    title: string
-    price: number
-    imageCover: string
-    category: Category
-    ratingsAverage: number
-  }
-}
+const HomeCard = ({ product }: { product: Product }) => {
+  const { addToWishList, removeProduct, isInWishList } =
+    useContext(WishListContext)
 
-const HomeCard = ({ product }: ProductCardProps) => {
-  const { addToWishList, isInWishList, removeProduct } = useContext(WishListContext)
+  const inWishlist = isInWishList(product.id)
 
-  const handleWishListToggle = () => {
-    if (isInWishList(product.id)) {
+  const handleToggleWish = () => {
+    if (inWishlist) {
       removeProduct(product.id)
-      toast.info("تمت إزالة المنتج من المفضلة ❤️‍🔥")
+      toast.error("Product removed from wishlist", {
+        duration: 1000,
+        position: "top-center",
+      })
     } else {
       addToWishList({
         _id: product.id,
@@ -32,23 +37,57 @@ const HomeCard = ({ product }: ProductCardProps) => {
         category: product.category,
         ratingsAverage: product.ratingsAverage,
       })
-      toast.success("تمت إضافة المنتج إلى المفضلة 💖")
+      toast.success("Product added to wishlist successfully", {
+        duration: 1000,
+        position: "top-center",
+      })
     }
   }
 
   return (
-    <div className="p-4 rounded-2xl shadow-md bg-white">
-      <img src={product.imageCover} alt={product.title} className="w-full h-48 object-cover rounded-xl" />
-      <h3 className="mt-2 font-semibold text-lg">{product.title}</h3>
-      <p className="text-gray-600">{product.category.name}</p>
-      <p className="text-pink-600 font-bold">{product.price} EGP</p>
+    <div className="w-full p-3 sm:w-1/5 md:w-1/3 xl:w-1/5 2xl:w-1/5">
+      <div className="inner">
+        <Card className="p-2 gap-2">
+          <Link href={`/productDetails/${product.id}`}>
+            <CardHeader className="p-0">
+              <Image
+                width={500}
+                height={500}
+                src={product.imageCover}
+                alt={product.title}
+              />
+            </CardHeader>
+            <CardContent className="p-0">
+              <p className="font-bold text-green-500 mb-3 text-sm">
+                {product.category.name}
+              </p>
+              <p className=" line-clamp-1 ">{product.title}</p>
+            </CardContent>
+            <CardFooter className="p-0">
+              <div className="w-full flex justify-between items-center">
+                <p>{product.price} EGP</p>
+                <p>
+                  {product.ratingsAverage}
+                  <i className="fa-solid fa-star text-yellow-500"></i>
+                </p>
+              </div>
+            </CardFooter>
+          </Link>
 
-      <button
-        onClick={handleWishListToggle}
-        className="mt-3 px-4 py-2 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition"
-      >
-        {isInWishList(product.id) ? "إزالة من المفضلة" : "إضافة إلى المفضلة"}
-      </button>
+          <div className="flex justify-between items-center mt-2">
+            <AddBtnCart id={product.id} />
+
+            <button onClick={handleToggleWish}>
+              <Heart
+                size={24}
+                className={`cursor-pointer transition-colors ${
+                  inWishlist ? "text-red-500 fill-red-500" : "text-gray-500"
+                }`}
+              />
+            </button>
+          </div>
+        </Card>
+      </div>
     </div>
   )
 }
