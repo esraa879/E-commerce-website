@@ -42,7 +42,7 @@ const Register = () => {
 
       router.push("/login")
 
-    } catch (error) {
+    } catch (error : any) {
          
       toast.error(error.response.data.message,{
         position: 'top-center',
