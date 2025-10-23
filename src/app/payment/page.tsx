@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { onlinePaymentAction } from "@/PaymentActions/onlinePayment";
 
 const PaymentPage = () => {
-  const details = useRef<HTMLTextAreaElement>(null);
+  const details = useRef<HTMLInputElement>(null);
   const phone = useRef<HTMLInputElement>(null);
   const city = useRef<HTMLInputElement>(null);
 
